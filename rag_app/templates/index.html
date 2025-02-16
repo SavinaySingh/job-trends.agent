@@ -1,0 +1,83 @@
+{% load static %} {% csrf_token %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatGPT Webpage</title>
+    <!-- Include Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  </head>
+  <body class="bg-light">
+    <div
+      class="container d-flex flex-column justify-content-center align-items-center"
+      style="height: 100vh"
+    >
+      <header class="text-center mb-4">
+        <h1 class="display-4 text-primary">Explore Job Trends</h1>
+      </header>
+
+      <div
+        class="card shadow-lg w-100 w-md-75 w-lg-50"
+        style="max-height: 600px"
+      >
+        <div class="card-body d-flex flex-column">
+          <div
+            class="chat-container mb-3 flex-grow-1 overflow-auto"
+            id="chatBox"
+          >
+            <div
+              class="message bot-message p-3 mb-3 rounded bg-info text-white"
+            >
+              Hey there! 👋 I'm your job trends agent, here to help you explore
+              career possibilities.
+            </div>
+          </div>
+
+          <div class="input-container d-flex flex-column gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <label for="fileInput" class="m-0">
+                <img
+                  id="cameraIcon"
+                  src="static/icons/camera_icon.svg"
+                  alt="Camera Icon"
+                  width="30"
+                  height="30"
+                />
+              </label>
+              <input
+                type="file"
+                id="fileInput"
+                accept="image/*"
+                onchange="updateIcon()"
+                class="d-none"
+              />
+              <input
+                type="text"
+                id="textInput"
+                class="form-control form-control-lg"
+                name="textInput"
+                placeholder="Enter your message..."
+              />
+            </div>
+            <button
+              type="submit"
+              onclick="sendMessage()"
+              class="btn btn-primary btn-lg w-100"
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="static/js/scripts.js"></script>
+  </body>
+</html>

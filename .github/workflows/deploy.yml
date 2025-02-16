@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - main
+    # Only deploy when code (not configuration files) changes
+    paths:
+      - "**/*.py"
+      - "**/*.html"
+      - "**/*.css"
+      - "**/*.js"
+      - "**/templates/**"
+      - "**/static/**"
 
 jobs:
   deploy:

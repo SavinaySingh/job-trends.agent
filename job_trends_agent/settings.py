@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-y=!7u!=3k^7!&iqg^4ky+8hg$8j+oooki(e1r*iwk&x049_m!6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://job-trends-agent.onrender.com"]
+ALLOWED_HOSTS = ["job-trends-agent.onrender.com", "localhost", "127.0.0.1"]
 
 
 # Application definition

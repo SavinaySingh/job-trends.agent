@@ -1,0 +1,77 @@
+/* Custom styling for the chat box and messages */
+.chat-container {
+  max-height: 600px;
+  min-height: 500px;
+  overflow-y: auto;
+}
+
+.message {
+  font-size: 1.1rem;
+  line-height: 1.9;
+}
+
+/* Bot and user message styling */
+.bot-message {
+  background-color: #e9f7f6; /* Light cyan for bot messages */
+  padding: 12px; /* Slightly larger padding for better readability */
+  border-radius: 10px;
+  color: #007b7f; /* Darker cyan text */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-message {
+  background-color: #f1f8ff; /* Light blue for user messages */
+  padding: 10px;
+  border-radius: 10px;
+  color: #007bff; /* Dark blue text */
+  text-align: right;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Input and button colors */
+#textInput {
+  border: 1px solid #ced4da; /* Gray border */
+}
+
+.btn-primary {
+  background-color: #28a745; /* Green for primary button */
+  border-color: #28a745;
+}
+
+.btn-primary:hover {
+  background-color: #218838; /* Darker green on hover */
+  border-color: #1e7e34;
+}
+
+/* Button focused style */
+.btn:focus,
+.form-control:focus {
+  box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25); /* Green focus outline */
+}
+
+/* Adjust message box styles for a more polished look */
+.card {
+  border: none;
+  border-radius: 15px;
+  background-color: #ffffff;
+}
+
+#cameraIcon {
+  cursor: pointer;
+}
+
+/* Hide file input */
+#fileInput {
+  display: none;
+}
+
+/* Adjust input and button size on mobile screens */
+@media (max-width: 576px) {
+  .input-container input[type="text"] {
+    font-size: 14px;
+  }
+
+  .input-container button {
+    font-size: 14px;
+  }
+}

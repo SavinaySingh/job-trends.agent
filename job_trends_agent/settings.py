@@ -125,3 +125,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Static files (CSS, JavaScript, images)
 STATIC_URL = "/static/"
+
+# Directory to collect static files for production (useful when running 'collectstatic')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "rag_app/static"),
+]
+
+# This is the directory where the static files will be collected when running `python manage.py collectstatic`
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")

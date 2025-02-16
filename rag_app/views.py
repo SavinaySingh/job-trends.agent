@@ -10,7 +10,7 @@ from google.generativeai.generative_models import GenerativeModel
 
 load_dotenv()
 
-GOOGLE_API_KEY = os.getenv("API_KEY")
+GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
 configure(api_key=GOOGLE_API_KEY)
 
 

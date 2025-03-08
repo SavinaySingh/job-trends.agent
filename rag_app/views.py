@@ -22,7 +22,7 @@ def main_processor(request, *args, **kwargs):
     text_data = request.POST.get("text")
     file_data = request.FILES.get("file")
     parts = []
-    model = "gemini-pro"
+    model = "gemini-1.5-pro"
     if file_data is not None:
         model = "gemini-1.5-flash"
         image_file = file_data.read()

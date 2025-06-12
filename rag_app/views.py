@@ -22,9 +22,9 @@ def main_processor(request, *args, **kwargs):
     text_data = request.POST.get("text")
     file_data = request.FILES.get("file")
     parts = []
-    model = "gemini-1.5-pro"
+    model = "gemini-2.0-flash"
     if file_data is not None:
-        model = "gemini-1.5-flash"
+        model = "gemini-2.0-flash"
         image_file = file_data.read()
         with io.BytesIO(image_file) as img_io:
             img = Image.open(img_io)

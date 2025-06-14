@@ -14,3 +14,4 @@ rouge_score
 pdf2image==1.17.0
 sentence-transformers==3.4.1
 langchain-google-genai
+annoy

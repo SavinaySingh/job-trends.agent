@@ -5,45 +5,150 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Explore Job Trends</title>
-    <!-- Include Bootstrap CSS -->
+
+    <!-- Bootstrap -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+
+    <style>
+      body {
+        background: linear-gradient(to right, #f7f9fc, #e3f2fd);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .card {
+        border: none;
+        border-radius: 20px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .card:hover {
+        transform: scale(1.01);
+      }
+
+      header h1 {
+        font-weight: 700;
+        color: #2c3e50;
+      }
+
+      .chat-container {
+        max-height: 500px;
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+
+      .message {
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .bot-message {
+        background-color: #dff9fb;
+        color: #0984e3;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 12px;
+      }
+
+      .user-message {
+        background-color: #e8f0fe;
+        color: #2d3436;
+        text-align: right;
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 12px;
+      }
+
+      .input-container {
+        gap: 1rem;
+      }
+
+      #textInput {
+        border: 1px solid #ced4da;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: border-color 0.2s ease-in-out;
+      }
+
+      #textInput:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+      }
+
+      .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+        font-weight: 600;
+      }
+
+      .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+      }
+
+      #cameraIcon {
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+      }
+
+      #cameraIcon:hover {
+        transform: scale(1.1);
+      }
+
+      @media (max-width: 576px) {
+        header h1 {
+          font-size: 1.8rem;
+        }
+
+        #textInput,
+        .btn-primary {
+          font-size: 0.9rem;
+        }
+      }
+    </style>
   </head>
-  <body class="bg-light">
+
+  <body>
     <div
-      class="container d-flex flex-column justify-content-center align-items-center"
-      style="height: 100vh"
+      class="container d-flex flex-column justify-content-center align-items-center py-5"
     >
       <header class="text-center mb-4">
-        <h1 class="display-4 text-primary">Explore Job Trends</h1>
+        <h1 class="display-4">Job Trends Agent</h1>
+        <p class="text-muted">Your AI assistant for career discovery</p>
       </header>
 
-      <div
-        class="card shadow-lg w-100 w-md-75 w-lg-50"
-        style="max-height: 600px"
-      >
-        <div class="card-body d-flex flex-column">
-          <div
-            class="chat-container mb-3 flex-grow-1 overflow-auto"
-            id="chatBox"
-          >
-            <div
-              class="message bot-message p-3 mb-3 rounded bg-info text-white"
-            >
-              Hey there! 👋 I'm your job trends agent, here to help you explore
-              career possibilities.
+      <div class="card shadow-lg w-100 w-md-75 w-lg-50">
+        <div class="card-body d-flex flex-column" style="height: 600px;">
+          <div class="chat-container mb-3 flex-grow-1" id="chatBox">
+            <div class="message bot-message">
+              👋 <strong>Hey there!</strong> I’m your job trends assistant — here to help you understand how <strong>AI is reshaping the job market</strong>.
+              <br /><br />
+              You can ask me questions like:
+              <ul class="mt-2 mb-0">
+                <li>💼 Which jobs are most at risk due to AI?</li>
+                <li>🧠 What new roles are emerging because of AI?</li>
+                <li>💻 How is AI impacting marketing or software jobs?</li>
+                <li>🛡️ What skills can protect my career from automation?</li>
+                <li>🔍 Is my current role likely to be automated soon?</li>
+              </ul>
+              <br />
+              Just type a question below to explore real trends powered by data. 📊
             </div>
           </div>
 
-          <div class="input-container d-flex flex-column gap-3">
+          <div class="input-container d-flex flex-column">
             <div class="d-flex align-items-center gap-2">
               <label for="fileInput" class="m-0">
                 <img
                   id="cameraIcon"
-                  src="static/icons/camera_icon.svg"
+                  src="{% static 'icons/camera_icon.svg' %}"
                   alt="Camera Icon"
                   width="30"
                   height="30"
@@ -59,15 +164,15 @@
               <input
                 type="text"
                 id="textInput"
-                class="form-control form-control-lg"
                 name="textInput"
+                class="form-control form-control-lg"
                 placeholder="Enter your message..."
               />
             </div>
             <button
               type="submit"
               onclick="sendMessage()"
-              class="btn btn-primary btn-lg w-100"
+              class="btn btn-primary btn-lg w-100 mt-2"
             >
               Send
             </button>
@@ -76,8 +181,8 @@
       </div>
     </div>
 
-    <!-- Include Bootstrap JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="static/js/scripts.js"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
   </body>
 </html>

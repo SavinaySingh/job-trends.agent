@@ -15,5 +15,4 @@ pdf2image==1.17.0
 sentence-transformers==3.4.1
 langchain-google-genai
 annoy==1.17.3
-
 Markdown==3.8

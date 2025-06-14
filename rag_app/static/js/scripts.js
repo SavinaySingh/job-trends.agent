@@ -12,27 +12,26 @@ function sendMessage() {
     displayUserMessage(textInput); // Display user's query first
   }
 
-  // Send data asynchronously through AJAX
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "/process_request/", true);
-
-  // Include CSRF token in the request header
   xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
 
   xhr.onload = function () {
     if (xhr.status === 200) {
-      var response = JSON.parse(xhr.responseText).response; // Extract the value from the response JSON
+      var response = JSON.parse(xhr.responseText).response;
       displayBotResponse(response);
     } else {
       console.error("Error receiving data:", xhr.statusText);
     }
   };
+
   xhr.onerror = function () {
     console.error("Error receiving data:", xhr.statusText);
   };
+
   xhr.send(formData);
 
-  // Clear input fields
+  // Clear input fields after sending
   document.getElementById("textInput").value = "";
   document.getElementById("fileInput").value = "";
 }
@@ -40,8 +39,9 @@ function sendMessage() {
 function displayBotResponse(response) {
   var div = document.createElement("div");
   div.className = "message bot-message";
-  div.innerHTML = response; // Use innerHTML to handle HTML content
+  div.innerHTML = response; // Supports HTML formatting
   document.getElementById("chatBox").appendChild(div);
+  scrollChatToBottom();
 }
 
 function displayUserMessage(text) {
@@ -49,20 +49,19 @@ function displayUserMessage(text) {
   div.className = "message user-message";
   div.innerText = text;
   document.getElementById("chatBox").appendChild(div);
+  scrollChatToBottom();
 }
 
 function updateIcon() {
   document.getElementById("cameraIcon").src = "static/icons/image_uploaded.svg";
 }
 
-// Function to get CSRF cookie value
 function getCookie(name) {
   var cookieValue = null;
   if (document.cookie && document.cookie !== "") {
     var cookies = document.cookie.split(";");
     for (var i = 0; i < cookies.length; i++) {
       var cookie = cookies[i].trim();
-      // Check if the cookie name matches the parameter
       if (cookie.substring(0, name.length + 1) === name + "=") {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;
@@ -70,4 +69,17 @@ function getCookie(name) {
     }
   }
   return cookieValue;
+}
+
+document.getElementById('textInput').addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
+// Optional: Automatically scroll chat to bottom after a new message
+function scrollChatToBottom() {
+  var chatBox = document.getElementById("chatBox");
+  chatBox.scrollTop = chatBox.scrollHeight;
 }

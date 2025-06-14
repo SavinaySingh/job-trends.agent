@@ -10,6 +10,7 @@ from sentence_transformers import SentenceTransformer
 import google.ai.generativelanguage as glm
 from google.generativeai.client import configure
 from google.generativeai.generative_models import GenerativeModel
+import markdown
 
 # Load keys and configs
 load_dotenv()
@@ -75,12 +76,17 @@ def main_processor(request, *args, **kwargs):
         context_text = "\n---\n".join(context_docs)
         print(f"Context for RAG: {context_text}")
         parts.insert(
-            0, glm.Part(text=f"Use the following context to answer:\n{context_text}")
+            0,
+            glm.Part(
+                text=f"""You are a helpful analyst who provides insights based on the provided context." 
+                    Use the following context to answer the question clearly:
+                    {context_text}"""
+            ),
         )
 
     # Generate using Gemini
     gemini_model = GenerativeModel(model)
     response = gemini_model.generate_content(glm.Content(parts=parts))
 
-    response_data = {"response": str(response.parts[0].text)}
+    response_data = {"response": markdown.markdown(str(response.parts[0].text))}
     return JsonResponse(response_data)

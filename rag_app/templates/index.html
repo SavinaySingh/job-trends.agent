@@ -112,6 +112,65 @@
           font-size: 0.9rem;
         }
       }
+      body.dark-mode {
+  background: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode .card {
+  background-color: #1e1e1e;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode header h1 {
+  color: #ffffff;
+}
+
+body.dark-mode .text-muted {
+  color: #b0b0b0 !important;
+}
+
+body.dark-mode .bot-message {
+  background-color: #263238;
+  color: #80d8ff;
+  border: 1px solid #37474f;
+}
+
+body.dark-mode .user-message {
+  background-color: #1f2a36;
+  color: #ffffff;
+  border: 1px solid #37474f;
+}
+
+body.dark-mode #textInput {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #444;
+}
+
+body.dark-mode #textInput::placeholder {
+  color: #888;
+}
+
+body.dark-mode .btn-primary {
+  background-color: #00bfa5;
+  border-color: #00bfa5;
+}
+
+body.dark-mode .btn-primary:hover {
+  background-color: #009e88;
+  border-color: #008675;
+}
+
+body.dark-mode .btn-outline-dark {
+  color: #ffffff;
+  border-color: #888;
+}
+
+body.dark-mode #cameraIcon {
+  filter: invert(90%);
+}
+
     </style>
   </head>
 
@@ -119,10 +178,17 @@
     <div
       class="container d-flex flex-column justify-content-center align-items-center py-5"
     >
-      <header class="text-center mb-4">
-        <h1 class="display-4">Job Trends Agent</h1>
-        <p class="text-muted">Your AI assistant for career discovery</p>
-      </header>
+    <header class="text-center mb-4">
+      <h1 class="display-4">Job Trends Agent</h1>
+      <p class="text-muted">Your AI assistant for career discovery</p>
+      <button
+        class="btn btn-sm btn-outline-dark mt-2"
+        id="toggleThemeBtn"
+        onclick="toggleTheme()"
+      >
+      🌙 Dark Mode
+      </button>
+    </header>
 
       <div class="card shadow-lg w-100 w-md-75 w-lg-50">
         <div class="card-body d-flex flex-column" style="height: 600px;">
@@ -185,5 +251,33 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/scripts.js' %}"></script>
+    <script>
+      function toggleTheme() {
+        const body = document.body;
+        const toggleBtn = document.getElementById("toggleThemeBtn");
+    
+        body.classList.toggle("dark-mode");
+        const isDark = body.classList.contains("dark-mode");
+    
+        // Store preference
+        localStorage.setItem("darkMode", isDark);
+    
+        // Update button label
+        toggleBtn.innerHTML = isDark ? "☀️ Day Mode" : "🌙 Dark Mode";
+      }
+    
+      // Load preference on page load
+      window.onload = () => {
+        const prefersDark = localStorage.getItem("darkMode") === "true";
+        const toggleBtn = document.getElementById("toggleThemeBtn");
+    
+        if (prefersDark) {
+          document.body.classList.add("dark-mode");
+          toggleBtn.innerHTML = "☀️ Day Mode";
+        } else {
+          toggleBtn.innerHTML = "🌙 Dark Mode";
+        }
+      };
+    </script>
   </body>
 </html>

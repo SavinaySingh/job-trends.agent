@@ -11,6 +11,9 @@ import google.ai.generativelanguage as glm
 from google.generativeai.client import configure
 from google.generativeai.generative_models import GenerativeModel
 import markdown
+from django.views.decorators.csrf import csrf_exempt
+from collections import deque
+
 
 # Load keys and configs
 load_dotenv()
@@ -37,13 +40,28 @@ def chat_page(request, *args, **kwargs):
     return render(request, "index.html")
 
 
+# Max number of conversation turns to keep
+MAX_CONTEXT_HISTORY = 5
+
+
+@csrf_exempt
 def main_processor(request, *args, **kwargs):
     text_data = request.POST.get("text")
     file_data = request.FILES.get("file")
     parts = []
     model = "gemini-2.0-flash"
 
-    # Handle image input (optional)
+    # Initialize Gemini model
+    gemini_model = GenerativeModel(model)
+
+    # Initialize or retrieve session memory (deque)
+    if "chat_history" not in request.session:
+        request.session["chat_history"] = []
+
+    # Limit context buffer size
+    chat_history = deque(request.session["chat_history"], maxlen=MAX_CONTEXT_HISTORY)
+
+    # 1. Optional image handling
     if file_data is not None:
         image_file = file_data.read()
         with io.BytesIO(image_file) as img_io:
@@ -55,38 +73,47 @@ def main_processor(request, *args, **kwargs):
                 glm.Part(inline_data=glm.Blob(mime_type=mime, data=image_file))
             )
 
-    # RAG: get top documents using Annoy vector search
-    context_docs = []
+    # 2. Text input handling
     if text_data:
         parts.append(glm.Part(text=text_data))
 
-        # Embed query
+        # 3. Vector-based RAG
         query_embedding = embedding_model.encode(text_data)
-
-        # Retrieve top K chunks
         top_k = 5
         nearest_ids = annoy_index.get_nns_by_vector(query_embedding, top_k)
-
-        # Get associated text
         context_docs = [
             doc_text_mapping[str(i)] for i in nearest_ids if str(i) in doc_text_mapping
         ]
-
-        # Prepend context to the prompt
         context_text = "\n---\n".join(context_docs)
-        print(f"Context for RAG: {context_text}")
-        parts.insert(
-            0,
-            glm.Part(
-                text=f"""You are a helpful analyst who provides insights based on the provided context." 
-                    Use the following context to answer the question clearly:
-                    {context_text}"""
-            ),
-        )
+        print(f"Retrieved {len(context_docs)} context documents.")
+        # 4. Add recent history from session buffer
+        history_blocks = []
+        for turn in chat_history:
+            history_blocks.append(f"User: {turn['user']}\nAssistant: {turn['bot']}")
+        history_prompt = "\n\n".join(history_blocks)
 
-    # Generate using Gemini
-    gemini_model = GenerativeModel(model)
-    response = gemini_model.generate_content(glm.Content(parts=parts))
+        # 5. Add both history and context to the prompt
+        system_prompt = f"""You are a helpful analyst chatbot that answers user questions based on labor market data and prior context.
 
-    response_data = {"response": markdown.markdown(str(response.parts[0].text))}
-    return JsonResponse(response_data)
+            [Conversation History]
+            {history_prompt}
+
+            [Retrieved Context]
+            {context_text}
+
+            Now answer the user's new question based on the above.
+            """
+        parts.insert(0, glm.Part(text=system_prompt))
+
+        # 6. Generate response
+        response = gemini_model.generate_content(glm.Content(parts=parts))
+        reply_text = str(response.parts[0].text)
+
+        # 7. Save this turn to session memory
+        chat_history.append({"user": text_data, "bot": reply_text})
+        request.session["chat_history"] = list(chat_history)
+
+        # 8. Return response
+        return JsonResponse({"response": markdown.markdown(reply_text)})
+
+    return JsonResponse({"response": "No input received."})

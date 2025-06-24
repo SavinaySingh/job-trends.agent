@@ -1,5 +1,9 @@
 # LabourLens: An AI-powered chatbot for tracking labor market trends 📊
 
+## Motivation
+- Labor market data is scattered across reports and sources
+- It’s a struggle to access or interpret these trends.
+
 ## Overview  
 The **LabourLens** leverages **Retrieval-Augmented Generation (RAG)** to analyze and respond to questions about how **AI transformation** is impacting the labor market. By utilizing a **knowledge source** of indexed documents, the chatbot provides up-to-date and data-driven insights on job trends, emerging skills, and industry shifts.  
 

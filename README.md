@@ -15,11 +15,11 @@
 <p align="center">
   <img src="https://github.com/user-attachments/assets/83d873c4-9db2-49f4-b82b-ec00147ea2d6" width="600"/>
 </p>
-- ✅ **AI-Driven Insights** – Uses **RAG** to retrieve relevant information and generate contextual responses.  
-- ✅ **Live Document Indexing** – Continuously updates its knowledge base with **job market reports, research papers, and industry insights**.  
-- ✅ **Multi-Format Support** – Processes text, CSV, PDF, and images to extract labor market insights.  
-- ✅ **Efficient Query Handling** – Avoids redundant processing with **intelligent caching and indexing**.  
-- ✅ **Conversational AI** – Engages users with natural language responses based on real-time data retrieval.  
+
+- 🚀 **Multi-Format Support** – Processes text, CSV, PDF, and images to extract labor market insights.  
+- 🧠 **Conversational AI** – Engages users through natural language responses powered by real-time data retrieval and enhanced with context-buffer memory.  
+- ⚡ **Efficient Semantic Search** – Uses **HNSW indexing via FAISS** for fast and accurate retrieval of relevant information from the document store.  
+- 🎯 **Planned Ensemble Prompting** – Aims to minimize hallucinations by combining multiple prompts, though currently not implemented due to Gemini’s rate limiting.
 
 ## How It Works  
 

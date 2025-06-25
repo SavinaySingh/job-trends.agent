@@ -1,14 +1,20 @@
-# LabourLens: An AI-powered chatbot for tracking labor market trends 📊
+# LabourLens: AI-Powered Insights into Labour Market Trends 📈
 
 ## Motivation
 - Labor market data is scattered across reports and sources
 - It’s a struggle to access or interpret these trends.
 
 ## Overview  
-The **LabourLens** leverages **Retrieval-Augmented Generation (RAG)** to analyze and respond to questions about how **AI transformation** is impacting the labor market. By utilizing a **knowledge source** of indexed documents, the chatbot provides up-to-date and data-driven insights on job trends, emerging skills, and industry shifts.  
+**LabourLens** uses a combination of **Retrieval-Augmented Generation (RAG)** and **HyDE (Hypothetical Document Embeddings)** to analyze and respond to questions about the impact of **AI transformation** on the labor market. By utilizing a **knowledge source** of indexed documents, the chatbot provides up-to-date and data-driven insights on job trends, emerging skills, and industry shifts.  
 
-Try it out: https://job-trends-agent.onrender.com/
-## Key Features  
+- Try it out: https://job-trends-agent.onrender.com/
+- Video 🎥: https://drive.google.com/file/d/1Blawr5Tm8rDynljHn9mX4JB7zEntrQ4B/view?usp=drive_link
+  
+## Design Decisions
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/83d873c4-9db2-49f4-b82b-ec00147ea2d6" width="600"/>
+</p>
 - ✅ **AI-Driven Insights** – Uses **RAG** to retrieve relevant information and generate contextual responses.  
 - ✅ **Live Document Indexing** – Continuously updates its knowledge base with **job market reports, research papers, and industry insights**.  
 - ✅ **Multi-Format Support** – Processes text, CSV, PDF, and images to extract labor market insights.  

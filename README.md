@@ -1,4 +1,4 @@
-# LabourLens: AI-Powered Insights into Labour Market Trends 📈
+# LabourLens: Understanding impact of AI on Labour Market 📈
 
 ## Motivation
 - Labor market data is scattered across reports and sources

@@ -11,236 +11,394 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
 
     <style>
       body {
-        background: linear-gradient(to right, #f7f9fc, #e3f2fd);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+        margin: 0;
+        transition: all 0.3s ease;
       }
 
       .card {
         border: none;
-        border-radius: 20px;
-        background-color: #ffffff;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        transition: transform 0.3s ease-in-out;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
       }
 
       .card:hover {
-        transform: scale(1.01);
+        transform: translateY(-5px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
       }
 
       header h1 {
-        font-weight: 700;
-        color: #2c3e50;
+        font-weight: 800;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+        color: #6c757d;
+        margin-bottom: 2rem;
       }
 
       .chat-container {
-        max-height: 500px;
+        max-height: 450px;
         overflow-y: auto;
         padding-right: 10px;
+        scroll-behavior: smooth;
+      }
+
+      .chat-container::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .chat-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      .chat-container::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 10px;
       }
 
       .message {
         font-size: 1rem;
         line-height: 1.6;
+        margin-bottom: 15px;
+        animation: fadeInUp 0.5s ease;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .bot-message {
-        background-color: #dff9fb;
-        color: #0984e3;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        border-radius: 12px;
-        padding: 12px 16px;
-        margin-bottom: 12px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 20px 20px 20px 5px;
+        padding: 15px 20px;
+        position: relative;
+        max-width: 85%;
+      }
+
+      .bot-message::before {
+        content: '🤖';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        background: white;
+        border-radius: 50%;
+        padding: 5px;
+        font-size: 1.2rem;
       }
 
       .user-message {
-        background-color: #e8f0fe;
-        color: #2d3436;
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        color: white;
         text-align: right;
-        border-radius: 12px;
-        padding: 12px 16px;
-        margin-bottom: 12px;
+        border-radius: 20px 20px 5px 20px;
+        padding: 15px 20px;
+        margin-left: auto;
+        max-width: 85%;
+        position: relative;
+      }
+
+      .user-message::before {
+        content: '👤';
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: white;
+        border-radius: 50%;
+        padding: 5px;
+        font-size: 1.2rem;
       }
 
       .input-container {
         gap: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
       }
 
       #textInput {
-        border: 1px solid #ced4da;
-        border-radius: 10px;
-        padding: 0.75rem 1rem;
+        border: 2px solid transparent;
+        border-radius: 15px;
+        padding: 15px 20px;
         font-size: 1rem;
-        transition: border-color 0.2s ease-in-out;
+        background: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
       }
 
       #textInput:focus {
-        border-color: #28a745;
-        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        outline: none;
       }
 
       .btn-primary {
-        background-color: #28a745;
-        border-color: #28a745;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
         font-weight: 600;
+        padding: 15px 30px;
+        border-radius: 15px;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
       }
 
       .btn-primary:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(45deg, #764ba2, #667eea);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
       }
 
       #cameraIcon {
         cursor: pointer;
-        transition: transform 0.2s ease-in-out;
+        transition: all 0.3s ease;
+        padding: 8px;
+        border-radius: 10px;
+        background: rgba(102, 126, 234, 0.1);
       }
 
       #cameraIcon:hover {
-        transform: scale(1.1);
+        transform: scale(1.1) rotate(5deg);
+        background: rgba(102, 126, 234, 0.2);
       }
 
-      @media (max-width: 576px) {
-        header h1 {
-          font-size: 1.8rem;
-        }
-
-        #textInput,
-        .btn-primary {
-          font-size: 0.9rem;
-        }
+      .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
       }
+
+      .theme-toggle:hover {
+        transform: scale(1.05);
+        background: white;
+      }
+
+      .typing-indicator {
+        display: none;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 20px;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        max-width: 85%;
+      }
+
+      .typing-dots {
+        display: inline-flex;
+        gap: 5px;
+      }
+
+      .typing-dots span {
+        height: 8px;
+        width: 8px;
+        background: #667eea;
+        border-radius: 50%;
+        display: inline-block;
+        animation: typing 1.4s infinite ease-in-out;
+      }
+
+      .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+      .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+      @keyframes typing {
+        0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+        40% { opacity: 1; transform: scale(1); }
+      }
+
+      /* Dark Mode */
       body.dark-mode {
-  background: #121212;
-  color: #e0e0e0;
-}
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      }
 
-body.dark-mode .card {
-  background-color: #1e1e1e;
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
-}
+      body.dark-mode .card {
+        background: rgba(30, 30, 30, 0.95);
+        color: #e0e0e0;
+      }
 
-body.dark-mode header h1 {
-  color: #ffffff;
-}
+      body.dark-mode header h1 {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
 
-body.dark-mode .text-muted {
-  color: #b0b0b0 !important;
-}
+      body.dark-mode .subtitle {
+        color: #b0b0b0;
+      }
 
-body.dark-mode .bot-message {
-  background-color: #263238;
-  color: #80d8ff;
-  border: 1px solid #37474f;
-}
+      body.dark-mode .input-container {
+        background: rgba(40, 40, 40, 0.9);
+      }
 
-body.dark-mode .user-message {
-  background-color: #1f2a36;
-  color: #ffffff;
-  border: 1px solid #37474f;
-}
+      body.dark-mode #textInput {
+        background: #2a2a2a;
+        color: #ffffff;
+        border-color: #444;
+      }
 
-body.dark-mode #textInput {
-  background-color: #2a2a2a;
-  color: #ffffff;
-  border: 1px solid #444;
-}
+      body.dark-mode #textInput::placeholder {
+        color: #888;
+      }
 
-body.dark-mode #textInput::placeholder {
-  color: #888;
-}
+      body.dark-mode .theme-toggle {
+        background: rgba(40, 40, 40, 0.9);
+        color: white;
+      }
 
-body.dark-mode .btn-primary {
-  background-color: #00bfa5;
-  border-color: #00bfa5;
-}
+      @media (max-width: 768px) {
+        header h1 {
+          font-size: 2rem;
+        }
+        
+        .card {
+          margin: 10px;
+          border-radius: 20px;
+        }
+        
+        .bot-message, .user-message {
+          max-width: 95%;
+        }
+      }
 
-body.dark-mode .btn-primary:hover {
-  background-color: #009e88;
-  border-color: #008675;
-}
+      .stats-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 15px;
+        margin: 10px 0;
+        backdrop-filter: blur(10px);
+      }
 
-body.dark-mode .btn-outline-dark {
-  color: #ffffff;
-  border-color: #888;
-}
+      .skill-tag {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        margin: 3px;
+        font-size: 0.9rem;
+      }
 
-body.dark-mode #cameraIcon {
-  filter: invert(90%);
-}
+      .risk-level {
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        margin: 5px 0;
+      }
 
+      .risk-high { background: #ff6b6b; color: white; }
+      .risk-medium { background: #ffd93d; color: #333; }
+      .risk-low { background: #6bcf7f; color: white; }
     </style>
   </head>
 
   <body>
-    <div
-      class="container d-flex flex-column justify-content-center align-items-center py-5"
-    >
-    <header class="text-center mb-4">
-      <h1 class="display-4">Job Trends Agent</h1>
-      <p class="text-muted">Your AI assistant for career discovery</p>
-      <button
-        class="btn btn-sm btn-outline-dark mt-2"
-        id="toggleThemeBtn"
-        onclick="toggleTheme()"
-      >
+    <button class="theme-toggle" id="toggleThemeBtn" onclick="toggleTheme()">
       🌙 Dark Mode
-      </button>
-    </header>
+    </button>
 
-      <div class="card shadow-lg w-100 w-md-75 w-lg-50">
-        <div class="card-body d-flex flex-column" style="height: 600px;">
+    <div class="container d-flex flex-column justify-content-center align-items-center py-4">
+      <header class="text-center mb-4">
+        <h1>Job Trends Agent</h1>
+        <p class="subtitle">Your AI assistant for navigating the future of work</p>
+      </header>
+
+      <div class="card shadow-lg w-100" style="max-width: 800px;">
+        <div class="card-body d-flex flex-column" style="height: 70vh; min-height: 600px;">
           <div class="chat-container mb-3 flex-grow-1" id="chatBox">
             <div class="message bot-message">
-              👋 <strong>Hey there!</strong> I’m your job trends assistant — here to help you understand how <strong>AI is reshaping the job market</strong>.
+              <strong>Welcome to the Future of Work! 🚀</strong>
               <br /><br />
-              You can ask me questions like:
-              <ul class="mt-2 mb-0">
-                <li>💼 Which jobs are most at risk due to AI?</li>
-                <li>🧠 What new roles are emerging because of AI?</li>
-                <li>💻 How is AI impacting marketing or software jobs?</li>
-                <li>🛡️ What skills can protect my career from automation?</li>
-                <li>🔍 Is my current role likely to be automated soon?</li>
-              </ul>
+              I'm your AI-powered job trends analyst, here to help you understand how artificial intelligence and automation are reshaping careers worldwide.
+              <br /><br />
+              <strong>What I can help you explore:</strong>
+              <div class="mt-3">
+                <span class="skill-tag">💼 Job Risk Analysis</span>
+                <span class="skill-tag">🌟 Emerging Careers</span>
+                <span class="skill-tag">📊 Market Trends</span>
+                <span class="skill-tag">🛡️ Future-Proof Skills</span>
+                <span class="skill-tag">💰 Salary Insights</span>
+              </div>
               <br />
-              Just type a question below to explore real trends powered by data. 📊
+              Ask me anything about your career's future in the age of AI! 🤖✨
             </div>
           </div>
 
-          <div class="input-container d-flex flex-column">
-            <div class="d-flex align-items-center gap-2">
+          <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <span style="margin-left: 10px; color: #667eea;">AI is analyzing trends...</span>
+          </div>
+
+          <div class="input-container">
+            <div class="d-flex align-items-center gap-3 mb-3">
               <label for="fileInput" class="m-0">
-                <img
-                  id="cameraIcon"
-                  src="{% static 'icons/camera_icon.svg' %}"
-                  alt="Camera Icon"
-                  width="30"
-                  height="30"
-                />
+                <div id="cameraIcon" title="Upload job description or resume">
+                  📷
+                </div>
               </label>
               <input
                 type="file"
                 id="fileInput"
-                accept="image/*"
-                onchange="updateIcon()"
+                accept="image/*,.pdf,.doc,.docx"
                 class="d-none"
               />
               <input
                 type="text"
                 id="textInput"
-                name="textInput"
-                class="form-control form-control-lg"
-                placeholder="Enter your message..."
+                class="form-control"
+                placeholder="Ask about job trends, AI impact, or your career future..."
+                onkeypress="handleKeyPress(event)"
               />
             </div>
             <button
-              type="submit"
+              type="button"
               onclick="sendMessage()"
-              class="btn btn-primary btn-lg w-100 mt-2"
+              class="btn btn-primary w-100"
+              id="sendBtn"
             >
-              Send
+              <span id="btnText">Send Message</span>
+              <span id="btnSpinner" class="d-none">
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Analyzing...
+              </span>
             </button>
           </div>
         </div>
@@ -256,11 +414,12 @@ body.dark-mode #cameraIcon {
       <div id="uploadStatus" class="mt-3 text-center" style="max-width: 300px;"></div>
     </div> 
 
-    
-    <!-- Scripts -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/scripts.js' %}"></script>
     <script>
+      
+
       function toggleTheme() {
         const body = document.body;
         const toggleBtn = document.getElementById("toggleThemeBtn");
@@ -268,25 +427,44 @@ body.dark-mode #cameraIcon {
         body.classList.toggle("dark-mode");
         const isDark = body.classList.contains("dark-mode");
     
-        // Store preference
-        localStorage.setItem("darkMode", isDark);
-    
         // Update button label
-        toggleBtn.innerHTML = isDark ? "☀️ Day Mode" : "🌙 Dark Mode";
+        toggleBtn.innerHTML = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
       }
-    
-      // Load preference on page load
+
+      // Initialize with sample questions that call your backend
       window.onload = () => {
-        const prefersDark = localStorage.getItem("darkMode") === "true";
-        const toggleBtn = document.getElementById("toggleThemeBtn");
-    
-        if (prefersDark) {
-          document.body.classList.add("dark-mode");
-          toggleBtn.innerHTML = "☀️ Day Mode";
-        } else {
-          toggleBtn.innerHTML = "🌙 Dark Mode";
+        // Add CSRF token for Django
+        if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+          const csrfToken = document.createElement('input');
+          csrfToken.type = 'hidden';
+          csrfToken.name = 'csrfmiddlewaretoken';
+          csrfToken.value = '{{ csrf_token }}'; // Django template will fill this
+          document.body.appendChild(csrfToken);
         }
+        
+        setTimeout(() => {
+          addMessage(`
+            <strong>💡 Popular Questions Today:</strong>
+            <div style="margin-top: 10px;">
+              <div style="margin: 8px 0; cursor: pointer; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 10px;" onclick="askQuestion('Is my marketing job at risk from AI?')">
+                "Is my marketing job at risk from AI?"
+              </div>
+              <div style="margin: 8px 0; cursor: pointer; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 10px;" onclick="askQuestion('What new jobs are emerging because of AI?')">
+                "What new jobs are emerging because of AI?"
+              </div>
+              <div style="margin: 8px 0; cursor: pointer; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 10px;" onclick="askQuestion('What skills should I learn to be future-proof?')">
+                "What skills should I learn to be future-proof?"
+              </div>
+            </div>
+            <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">Click any question above or ask your own! 👆</p>
+          `);
+        }, 2000);
       };
+      
+      async function askQuestion(question) {
+        document.getElementById('textInput').value = question;
+        await sendMessage();
+      }
     </script>
     <script>
       document.getElementById("uploadForm").addEventListener("submit", function (e) {
@@ -325,3 +503,4 @@ body.dark-mode #cameraIcon {
     </script>
   </body>
 </html>
+  

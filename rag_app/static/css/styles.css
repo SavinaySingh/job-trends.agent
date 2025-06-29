@@ -556,3 +556,8 @@ body.dark-mode .file-input {
     white-space: pre-wrap;
     text-align: left;
 }
+
+.feedback-buttons button {
+    display: inline-block;
+    margin-right: 8px;
+}

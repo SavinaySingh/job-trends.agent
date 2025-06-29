@@ -78,7 +78,6 @@ function sendMessage() {
   if (file) formData.append("file", file);
   if (text) formData.append("text", text);
 
-  // Send request
   fetch("/process_request/", {
     method: "POST",
     headers: {
@@ -88,26 +87,23 @@ function sendMessage() {
   })
     .then(response => response.json())
     .then(data => {
-      displayBotMessage(data.response, data.context_docs || []);
+      displayBotMessage(data.response, data.context_docs || [], text);  // pass user query here!
     })
     .catch(error => {
       console.error("Error:", error);
       displayBotResponse("Sorry, I encountered an error. Please try again.");
     })
     .finally(() => {
-      // Reset loading state
       isLoading = false;
       sendBtn.disabled = false;
       sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Send</span>';
 
-      // Clear inputs
       textInput.value = "";
       textInput.style.height = 'auto';
       fileInput.value = "";
       resetCameraIcon();
     });
 }
-
 // Display user message
 function displayUserMessage(text) {
   const div = document.createElement("div");
@@ -207,7 +203,11 @@ document.getElementById("uploadForm").addEventListener("submit", function (e) {
     });
 });
 
-function displayBotMessage(responseText, contextDocs) {
+let botMessageCount = 0;
+
+function displayBotMessage(responseText, contextDocs, userQuery) {
+  botMessageCount++;
+
   const chatBox = document.getElementById("chatBox");
 
   const messageEl = document.createElement("div");
@@ -232,10 +232,65 @@ function displayBotMessage(responseText, contextDocs) {
 
   contentEl.appendChild(textEl);
   contentEl.appendChild(tooltipEl);
+
+  // ✅ Add feedback buttons if it's a real reply
+  if (userQuery && responseText) {
+    const feedbackDiv = document.createElement("div");
+    feedbackDiv.classList.add("feedback-buttons", "mt-2");
+
+    const thumbsUp = document.createElement("button");
+    thumbsUp.classList.add("btn", "btn-sm", "btn-outline-success", "me-2");
+    thumbsUp.title = "Thumbs Up";
+    thumbsUp.innerHTML = '<i class="fas fa-thumbs-up"></i>';
+    thumbsUp.onclick = () => sendFeedback(userQuery, contextDocs, responseText, 1, feedbackDiv);
+
+    const thumbsDown = document.createElement("button");
+    thumbsDown.classList.add("btn", "btn-sm", "btn-outline-danger");
+    thumbsDown.title = "Thumbs Down";
+    thumbsDown.innerHTML = '<i class="fas fa-thumbs-down"></i>';
+    thumbsDown.onclick = () => sendFeedback(userQuery, contextDocs, responseText, 0, feedbackDiv);
+
+    feedbackDiv.appendChild(thumbsUp);
+    feedbackDiv.appendChild(thumbsDown);
+    contentEl.appendChild(feedbackDiv);
+  }
+
   messageEl.appendChild(contentEl);
   chatBox.appendChild(messageEl);
 
   // Initialize Bootstrap tooltip
   const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   tooltips.forEach(t => new bootstrap.Tooltip(t));
+
+  scrollChatToBottom();
+}
+
+// Function to send feedback
+function sendFeedback(userQuery, retrievedDocs, generatedResponse, feedbackRating, feedbackContainer) {
+  const feedbackData = {
+    timestamp: new Date().toISOString(),
+    query: userQuery,
+    retrieved_docs: retrievedDocs,
+    generated_response: generatedResponse,
+    feedback_rating: feedbackRating
+  };
+
+  fetch("/log_feedback/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken")
+    },
+    body: JSON.stringify(feedbackData)
+  })
+    .then(res => {
+      if (res.ok) {
+        if (feedbackContainer) {
+          feedbackContainer.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i>Thanks for your feedback!</div>`;
+        }
+      } else {
+        alert("⚠️ Failed to send feedback.");
+      }
+    })
+    .catch(() => alert("❌ Error sending feedback."));
 }

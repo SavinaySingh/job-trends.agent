@@ -14,6 +14,7 @@ import markdown
 from django.views.decorators.csrf import csrf_exempt
 from collections import deque
 from update_knowledge import process_and_update_index
+from datetime import datetime
 
 # Load keys and configs
 load_dotenv()
@@ -24,6 +25,7 @@ configure(api_key=GOOGLE_API_KEY)
 VECTOR_DIM = 384
 ANNOY_INDEX_PATH = "annoy_st_index.ann"
 DOC_MAPPING_PATH = "doc_mapping.json"  # mapping index -> text
+FEEDBACK_LOG_PATH = "rlhf_feedback_log.jsonl"
 
 annoy_index = AnnoyIndex(VECTOR_DIM, "angular")
 annoy_index.load(ANNOY_INDEX_PATH)
@@ -145,3 +147,36 @@ def upload_file(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "No file uploaded"}, status=400)
+
+
+@csrf_exempt
+def log_feedback(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            # Add server timestamp if missing
+            if "timestamp" not in data:
+                data["timestamp"] = datetime.utcnow().isoformat() + "Z"
+
+            # Validate required keys minimally
+            required_keys = [
+                "timestamp",
+                "query",
+                "retrieved_docs",
+                "generated_response",
+                "feedback_rating",
+            ]
+            if not all(key in data for key in required_keys):
+                return JsonResponse(
+                    {"error": "Missing keys in feedback data"}, status=400
+                )
+
+            # Append feedback JSON line to file
+            with open(FEEDBACK_LOG_PATH, "a") as f:
+                f.write(json.dumps(data) + "\n")
+
+            return JsonResponse({"status": "success"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "POST method required"}, status=400)

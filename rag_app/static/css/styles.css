@@ -536,3 +536,23 @@ body.dark-mode .file-input {
         opacity: 0.7;
     }
 }
+
+.bot-reply-content {
+    position: relative;
+    padding-right: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.info-tooltip {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.wide-tooltip+.tooltip>.tooltip-inner {
+    max-width: 1000px !important;
+    white-space: pre-wrap;
+    text-align: left;
+}

@@ -88,7 +88,7 @@ function sendMessage() {
   })
     .then(response => response.json())
     .then(data => {
-      displayBotResponse(data.response);
+      displayBotMessage(data.response, data.context_docs || []);
     })
     .catch(error => {
       console.error("Error:", error);
@@ -206,3 +206,36 @@ document.getElementById("uploadForm").addEventListener("submit", function (e) {
       fileInput.value = ""; // Clear file input
     });
 });
+
+function displayBotMessage(responseText, contextDocs) {
+  const chatBox = document.getElementById("chatBox");
+
+  const messageEl = document.createElement("div");
+  messageEl.classList.add("message", "bot-message");
+
+  const contentEl = document.createElement("div");
+  contentEl.classList.add("bot-reply-content");
+
+  const textEl = document.createElement("span");
+  textEl.classList.add("bot-text");
+  textEl.innerHTML = responseText;
+
+  const tooltipEl = document.createElement("span");
+  tooltipEl.classList.add("info-tooltip");
+  tooltipEl.setAttribute("data-bs-toggle", "tooltip");
+  tooltipEl.setAttribute("data-bs-placement", "top");
+  tooltipEl.setAttribute("title", contextDocs.join("\n---\n"));
+
+  const icon = document.createElement("i");
+  icon.classList.add("fas", "fa-info-circle", "text-primary", "ms-2");
+  tooltipEl.appendChild(icon);
+
+  contentEl.appendChild(textEl);
+  contentEl.appendChild(tooltipEl);
+  messageEl.appendChild(contentEl);
+  chatBox.appendChild(messageEl);
+
+  // Initialize Bootstrap tooltip
+  const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  tooltips.forEach(t => new bootstrap.Tooltip(t));
+}

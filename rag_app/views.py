@@ -114,7 +114,12 @@ def main_processor(request, *args, **kwargs):
         request.session["chat_history"] = list(chat_history)
 
         # 8. Return response
-        return JsonResponse({"response": markdown.markdown(reply_text)})
+        return JsonResponse(
+            {
+                "response": markdown.markdown(reply_text),
+                "context_docs": context_docs,  # raw text array or optionally join with "\n\n"
+            }
+        )
 
     return JsonResponse({"response": "No input received."})
 

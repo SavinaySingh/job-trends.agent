@@ -77,7 +77,7 @@ def main_processor(request, *args, **kwargs):
     if text_data:
         parts.append(glm.Part(text=text_data))
 
-        # 3. Vector-based RAG
+        # 3. Vector-based retrieval
         query_embedding = embedding_model.encode(text_data)
         top_k = 5
         nearest_ids = annoy_index.get_nns_by_vector(query_embedding, top_k)

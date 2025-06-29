@@ -15,6 +15,10 @@ from django.views.decorators.csrf import csrf_exempt
 from collections import deque
 from update_knowledge import process_and_update_index
 from datetime import datetime
+from sklearn.metrics.pairwise import cosine_similarity
+import mlflow
+from nltk.translate.bleu_score import sentence_bleu
+from rouge_score import rouge_scorer
 
 # Load keys and configs
 load_dotenv()
@@ -115,6 +119,9 @@ def main_processor(request, *args, **kwargs):
         chat_history.append({"user": text_data, "bot": reply_text})
         request.session["chat_history"] = list(chat_history)
 
+        # Log the conversation turn
+        similar_query = check_similarity_and_log(text_data, context_docs, reply_text)
+
         # 8. Return response
         return JsonResponse(
             {
@@ -180,3 +187,88 @@ def log_feedback(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "POST method required"}, status=400)
+
+
+def check_similarity_and_log(new_query, retrieved_docs, generated_response):
+    try:
+        new_emb = embedding_model.encode(new_query).reshape(1, -1)
+        with open(FEEDBACK_LOG_PATH, "r") as f:
+            for line in f:
+                data = json.loads(line)
+                prev_emb = embedding_model.encode(data["query"]).reshape(1, -1)
+                similarity = cosine_similarity(new_emb, prev_emb)[0][0]
+                if similarity > 0.8:
+                    print(f"⚠️ Found similar query: {similarity:.2f}")
+                    return evaluate_and_log_metrics(
+                        original_query=new_query,
+                        original_retrieved=retrieved_docs,
+                        original_response=generated_response,
+                        previous=data,
+                    )
+    except Exception as e:
+        print("Similarity check error:", e)
+    return None
+
+
+def evaluate_and_log_metrics(
+    original_query, original_retrieved, original_response, previous
+):
+    try:
+        # Compute Retrieval MRR (simplified for 5 retrieved docs)
+        gold_doc = previous["retrieved_docs"][0] if previous["retrieved_docs"] else ""
+        mrr = 0.0
+        for i, doc in enumerate(original_retrieved):
+            if gold_doc.strip() in doc.strip():
+                mrr = 1.0 / (i + 1)
+                break
+
+        # BLEU score (simplified single reference)
+        bleu = sentence_bleu(
+            [previous["generated_response"].split()], original_response.split()
+        )
+
+        # ROUGE score
+        scorer = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
+        rouge = scorer.score(previous["generated_response"], original_response)
+        rouge_l = rouge["rougeL"].fmeasure
+
+        print(f"📊 MRR: {mrr:.2f} | BLEU: {bleu:.2f} | ROUGE-L: {rouge_l:.2f}")
+
+        # 🔍 Start MLflow run
+        with mlflow.start_run(run_name="SimilarityEval"):
+            # ✅ Log metrics
+            mlflow.log_metric("MRR", mrr)
+            mlflow.log_metric("BLEU", bleu)
+            mlflow.log_metric("ROUGE-L", rouge_l)
+
+            # ✅ Log inputs as params
+            mlflow.log_param("query", original_query[:100])
+            mlflow.log_param("previous_query", previous["query"][:100])
+            mlflow.log_param(
+                "similarity_to_previous",
+                cosine_similarity(
+                    embedding_model.encode(original_query).reshape(1, -1),
+                    embedding_model.encode(previous["query"]).reshape(1, -1),
+                )[0][0],
+            )
+
+            # ✅ Save and log full trace as artifact
+            trace_data = {
+                "current_query": original_query,
+                "previous_query": previous["query"],
+                "current_response": original_response,
+                "previous_response": previous["generated_response"],
+                "current_retrieved_docs": original_retrieved,
+                "previous_retrieved_docs": previous["retrieved_docs"],
+                "metrics": {"MRR": mrr, "BLEU": bleu, "ROUGE-L": rouge_l},
+            }
+            os.makedirs("mlruns/tmp", exist_ok=True)
+            trace_path = "mlruns/tmp/trace.json"
+            with open(trace_path, "w") as f:
+                json.dump(trace_data, f, indent=2)
+            mlflow.log_artifact(trace_path)
+
+        return {"similarity": True, "MRR": mrr, "BLEU": bleu, "ROUGE-L": rouge_l}
+    except Exception as e:
+        print("Evaluation error:", e)
+    return None

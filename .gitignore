@@ -11,3 +11,4 @@ rag_app/__pycache__/urls.cpython-311.pyc
 rag_app/__pycache__/__init__.cpython-311.pyc
 /knowledge_source
 /PickleFiles
+/mlruns

@@ -156,53 +156,6 @@ function getCookie(name) {
   return cookieValue;
 }
 
-// Document upload functionality
-document.getElementById("uploadForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const fileInput = document.getElementById("docFileInput");
-  const uploadBtn = document.querySelector("#uploadForm .upload-btn");
-
-  if (!fileInput.files.length) {
-    alert("Please select a file to upload.");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("file", fileInput.files[0]);
-
-  // Disable button and show loading animation
-  uploadBtn.disabled = true;
-  uploadBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Uploading...`;
-
-  fetch("{% url 'upload_file' %}", {
-    method: "POST",
-    headers: {
-      "X-CSRFToken": "{{ csrf_token }}",
-    },
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      const statusDiv = document.getElementById("uploadStatus");
-      if (data.message) {
-        statusDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
-      } else if (data.error) {
-        statusDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
-      }
-    })
-    .catch((error) => {
-      document.getElementById("uploadStatus").innerHTML =
-        `<div class="alert alert-danger">Upload failed: ${error}</div>`;
-    })
-    .finally(() => {
-      // Re-enable button and reset text
-      uploadBtn.disabled = false;
-      uploadBtn.innerHTML = `<i class="fas fa-upload"></i> Upload Document`;
-      fileInput.value = ""; // Clear file input
-    });
-});
-
 let botMessageCount = 0;
 
 function displayBotMessage(responseText, contextDocs, userQuery) {

@@ -1,67 +1,156 @@
-function sendMessage() {
-  var textInput = document.getElementById("textInput").value;
-  var fileInput = document.getElementById("fileInput").files[0];
-  document.getElementById("cameraIcon").src = "/static/icons/camera_icon.svg";
-  var formData = new FormData();
+// Global variables
+let isLoading = false;
 
-  if (fileInput) {
-    formData.append("file", fileInput);
+// Theme toggle functionality
+function toggleTheme() {
+  const body = document.body;
+  const toggleBtn = document.getElementById("toggleThemeBtn");
+  const icon = toggleBtn.querySelector('i');
+
+  body.classList.toggle("dark-mode");
+  const isDark = body.classList.contains("dark-mode");
+
+  // Store preference
+  localStorage.setItem("darkMode", isDark);
+
+  // Update button
+  if (isDark) {
+    icon.className = "fas fa-sun";
+    toggleBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+  } else {
+    icon.className = "fas fa-moon";
+    toggleBtn.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
   }
-  if (textInput.trim() !== "") {
-    formData.append("text", textInput);
-    displayUserMessage(textInput); // Display user's query first
+}
+
+// Load theme preference
+window.addEventListener('load', () => {
+  const prefersDark = localStorage.getItem("darkMode") === "true";
+  const toggleBtn = document.getElementById("toggleThemeBtn");
+
+  if (prefersDark) {
+    document.body.classList.add("dark-mode");
+    toggleBtn.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
   }
+});
 
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", "/process_request/", true);
-  xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+// Auto-resize textarea
+const textInput = document.getElementById('textInput');
+textInput.addEventListener('input', function () {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
 
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      var response = JSON.parse(xhr.responseText).response;
-      displayBotResponse(response);
-    } else {
-      console.error("Error receiving data:", xhr.statusText);
+// Send message on Enter (but allow Shift+Enter for new lines)
+textInput.addEventListener('keydown', function (event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    if (!isLoading) {
+      sendMessage();
     }
-  };
+  }
+});
 
-  xhr.onerror = function () {
-    console.error("Error receiving data:", xhr.statusText);
-  };
+// Send message function
+function sendMessage() {
+  if (isLoading) return;
 
-  xhr.send(formData);
+  const textInput = document.getElementById("textInput");
+  const fileInput = document.getElementById("fileInput");
+  const sendBtn = document.getElementById("sendBtn");
+  const text = textInput.value.trim();
+  const file = fileInput.files[0];
 
-  // Clear input fields after sending
-  document.getElementById("textInput").value = "";
-  document.getElementById("fileInput").value = "";
+  if (!text && !file) return;
+
+  // Set loading state
+  isLoading = true;
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span class="loading-dots">Thinking</span>';
+
+  // Display user message
+  if (text) {
+    displayUserMessage(text);
+  }
+
+  // Prepare form data
+  const formData = new FormData();
+  if (file) formData.append("file", file);
+  if (text) formData.append("text", text);
+
+  // Send request
+  fetch("/process_request/", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCookie("csrftoken")
+    },
+    body: formData
+  })
+    .then(response => response.json())
+    .then(data => {
+      displayBotMessage(data.response, data.context_docs || []);
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      displayBotResponse("Sorry, I encountered an error. Please try again.");
+    })
+    .finally(() => {
+      // Reset loading state
+      isLoading = false;
+      sendBtn.disabled = false;
+      sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Send</span>';
+
+      // Clear inputs
+      textInput.value = "";
+      textInput.style.height = 'auto';
+      fileInput.value = "";
+      resetCameraIcon();
+    });
 }
 
-function displayBotResponse(response) {
-  var div = document.createElement("div");
-  div.className = "message bot-message";
-  div.innerHTML = response; // Supports HTML formatting
-  document.getElementById("chatBox").appendChild(div);
-  scrollChatToBottom();
-}
-
+// Display user message
 function displayUserMessage(text) {
-  var div = document.createElement("div");
+  const div = document.createElement("div");
   div.className = "message user-message";
-  div.innerText = text;
+  div.textContent = text;
   document.getElementById("chatBox").appendChild(div);
   scrollChatToBottom();
 }
 
-function updateIcon() {
-  document.getElementById("cameraIcon").src = "static/icons/image_uploaded.svg";
+// Display bot response
+function displayBotResponse(response) {
+  const div = document.createElement("div");
+  div.className = "message bot-message";
+  div.innerHTML = response;
+  document.getElementById("chatBox").appendChild(div);
+  scrollChatToBottom();
 }
 
+// Update file upload icon
+function updateIcon() {
+  const icon = document.getElementById("cameraIcon");
+  icon.className = "fas fa-check file-uploaded";
+}
+
+// Reset camera icon
+function resetCameraIcon() {
+  const icon = document.getElementById("cameraIcon");
+  icon.className = "fas fa-camera";
+}
+
+// Scroll chat to bottom
+function scrollChatToBottom() {
+  const chatBox = document.getElementById("chatBox");
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Get CSRF cookie
 function getCookie(name) {
-  var cookieValue = null;
+  let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
-    var cookies = document.cookie.split(";");
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i].trim();
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
       if (cookie.substring(0, name.length + 1) === name + "=") {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;
@@ -71,15 +160,82 @@ function getCookie(name) {
   return cookieValue;
 }
 
-document.getElementById('textInput').addEventListener('keydown', function(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    sendMessage();
+// Document upload functionality
+document.getElementById("uploadForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const fileInput = document.getElementById("docFileInput");
+  const uploadBtn = document.querySelector("#uploadForm .upload-btn");
+
+  if (!fileInput.files.length) {
+    alert("Please select a file to upload.");
+    return;
   }
+
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+
+  // Disable button and show loading animation
+  uploadBtn.disabled = true;
+  uploadBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Uploading...`;
+
+  fetch("{% url 'upload_file' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": "{{ csrf_token }}",
+    },
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      const statusDiv = document.getElementById("uploadStatus");
+      if (data.message) {
+        statusDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+      } else if (data.error) {
+        statusDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+      }
+    })
+    .catch((error) => {
+      document.getElementById("uploadStatus").innerHTML =
+        `<div class="alert alert-danger">Upload failed: ${error}</div>`;
+    })
+    .finally(() => {
+      // Re-enable button and reset text
+      uploadBtn.disabled = false;
+      uploadBtn.innerHTML = `<i class="fas fa-upload"></i> Upload Document`;
+      fileInput.value = ""; // Clear file input
+    });
 });
 
-// Optional: Automatically scroll chat to bottom after a new message
-function scrollChatToBottom() {
-  var chatBox = document.getElementById("chatBox");
-  chatBox.scrollTop = chatBox.scrollHeight;
+function displayBotMessage(responseText, contextDocs) {
+  const chatBox = document.getElementById("chatBox");
+
+  const messageEl = document.createElement("div");
+  messageEl.classList.add("message", "bot-message");
+
+  const contentEl = document.createElement("div");
+  contentEl.classList.add("bot-reply-content");
+
+  const textEl = document.createElement("span");
+  textEl.classList.add("bot-text");
+  textEl.innerHTML = responseText;
+
+  const tooltipEl = document.createElement("span");
+  tooltipEl.classList.add("info-tooltip");
+  tooltipEl.setAttribute("data-bs-toggle", "tooltip");
+  tooltipEl.setAttribute("data-bs-placement", "top");
+  tooltipEl.setAttribute("title", contextDocs.join("\n---\n"));
+
+  const icon = document.createElement("i");
+  icon.classList.add("fas", "fa-info-circle", "text-primary", "ms-2");
+  tooltipEl.appendChild(icon);
+
+  contentEl.appendChild(textEl);
+  contentEl.appendChild(tooltipEl);
+  messageEl.appendChild(contentEl);
+  chatBox.appendChild(messageEl);
+
+  // Initialize Bootstrap tooltip
+  const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  tooltips.forEach(t => new bootstrap.Tooltip(t));
 }

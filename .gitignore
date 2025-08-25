@@ -1,4 +1,6 @@
 .venv
+__pycache__/
+*.pyc
 job_trends_agent/__pycache__/__init__.cpython-311.pyc
 job_trends_agent/__pycache__/settings.cpython-311.pyc
 job_trends_agent/__pycache__/urls.cpython-311.pyc
@@ -12,3 +14,10 @@ rag_app/__pycache__/__init__.cpython-311.pyc
 /knowledge_source
 /PickleFiles
 /mlruns
+/crawled_data
+/data/** 
+experiments/.ipynb_checkpoints/indexing_docs-checkpoint.ipynb
+
+!/data/web_search_cache.json
+!/data/doc_mapping.json
+!/data/rlhf_feedback_log.jsonl

@@ -1,0 +1,31 @@
+[project]
+name = "job_trends_analysis"
+version = "0.1.0"
+description = "Job trends analysis"
+requires-python = ">=3.11,<3.14"
+
+dependencies = [
+    "Django",
+    "google-generativeai",
+    "ipython",
+    "pillow",
+    "python-dotenv==1.0.1",
+    "gunicorn",
+    "whitenoise",
+    "pandas",
+    "langchain==0.3.20",
+    "python-pptx",
+    "reportlab",
+    "faiss-cpu",
+    "rouge_score",
+    "pdf2image==1.17.0",
+    "sentence-transformers==3.4.1",
+    "langchain-google-genai",
+    "annoy==1.17.3",
+    "Markdown==3.8",
+    "mlflow",
+    "beautifulsoup4==4.13.5",
+    "duckduckgo-search==8.1.1"
+]
+
+

@@ -16,3 +16,5 @@ rag_app/__pycache__/__init__.cpython-311.pyc
 /mlruns
 /crawled_data
 /data
+/vector_store
+experiments/.ipynb_checkpoints/indexing_docs-checkpoint.ipynb

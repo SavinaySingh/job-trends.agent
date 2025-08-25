@@ -8,7 +8,7 @@ import os
 
 # Load embedding model
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-FEEDBACK_LOG_PATH = "/data/rlhf_feedback_log.jsonl"
+FEEDBACK_LOG_PATH = "data/rlhf_feedback_log.jsonl"
 
 
 class FeedbackLogger:

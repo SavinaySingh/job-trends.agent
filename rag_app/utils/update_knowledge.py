@@ -2,8 +2,6 @@ import os
 import pickle
 import time
 from PIL import Image
-from io import BytesIO
-import base64
 from pdf2image import convert_from_path
 from langchain.text_splitter import CharacterTextSplitter
 from sentence_transformers import SentenceTransformer
@@ -15,8 +13,8 @@ import shutil
 
 def process_and_update_index(
     new_file_path,
-    knowledge_dir="./knowledge_source",
-    pickle_dir="./PickleFiles",
+    knowledge_dir="data/knowledge_source",
+    pickle_dir="data/PickleFiles",
     annoy_index_path="annoy_st_index.ann",
     doc_mapping_path="doc_mapping.json",
     llm=None,

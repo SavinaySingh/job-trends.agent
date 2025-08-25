@@ -4,7 +4,7 @@ from datetime import datetime
 import hashlib
 from rag_app.config import SERPAPI_KEY
 
-WEB_CACHE_PATH = "web_search_cache.json"
+WEB_CACHE_PATH = "data/web_search_cache.json"
 
 # Load web search cache
 try:

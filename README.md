@@ -10,7 +10,7 @@
 **LabourLens** uses a combination of **Retrieval-Augmented Generation (RAG)** and **HyDE (Hypothetical Document Embeddings)** to analyze and respond to questions about the impact of **AI transformation** on the labor market. By utilizing a **knowledge source** of indexed documents, the chatbot provides up-to-date and data-driven insights on job trends, emerging skills, and industry shifts.  
 
 - Try it out: https://job-trends-agent.onrender.com/
-- Video 🎥: https://drive.google.com/file/d/1Blawr5Tm8rDynljHn9mX4JB7zEntrQ4B/view?usp=drive_link
+- Video 🎥: https://drive.google.com/file/d/1bA_piEoNP_WaJTs2GekG7CLwi1qpq0v-/view
   
 ## Design Decisions
 

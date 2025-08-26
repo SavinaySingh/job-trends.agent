@@ -1,4 +1,6 @@
-<img width="468" height="52" alt="image" src="https://github.com/user-attachments/assets/83170d02-3448-42e8-82e9-5cadd48853d9" /># LabourLens: Understanding impact of AI on Labour Market 📈
+<img width="468" height="52" alt="image" src="https://github.com/user-attachments/assets/83170d02-3448-42e8-82e9-5cadd48853d9" />
+
+# LabourLens: Understanding impact of AI on Labour Market 📈
 
 ## Motivation
 - Labor market data is scattered across reports and sources

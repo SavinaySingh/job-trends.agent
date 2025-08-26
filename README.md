@@ -1,4 +1,4 @@
-# LabourLens: Understanding impact of AI on Labour Market 📈
+<img width="468" height="52" alt="image" src="https://github.com/user-attachments/assets/83170d02-3448-42e8-82e9-5cadd48853d9" /># LabourLens: Understanding impact of AI on Labour Market 📈
 
 ## Motivation
 - Labor market data is scattered across reports and sources
@@ -16,7 +16,9 @@
   <img src="https://github.com/user-attachments/assets/83d873c4-9db2-49f4-b82b-ec00147ea2d6" width="600"/>
 </p>
 
-- 🚀 **Multi-Format Support** – Processes text, CSV, PDF, and images to extract labor market insights.  
+- 🚀 **Multi-Format Support** – Processes text, CSV, PDF, and images to extract labor market insights.
+- 🏆 **Hybrid Retrieval (Docs + Web)** - Retrieves answers from both internal knowledge base and live web sources.
+- 🪞 **Explainability by Design** - Every response comes with tooltips showing source documents and sections used.
 - 🧠 **Conversational AI** – Engages users through natural language responses powered by real-time data retrieval and enhanced with context-buffer memory.  
 - ⚡ **Efficient Semantic Search** – Uses **HNSW indexing via FAISS** for fast and accurate retrieval of relevant information from the document store.  
 - 🎯 **Planned Ensemble Prompting** – Aims to minimize hallucinations by combining multiple prompts, though currently not implemented due to Gemini’s rate limiting.
@@ -49,7 +51,8 @@ cd job-trend-agent
 ```
 ### 2. **Install Dependencies**
 ```
-pip install -r requirements.txt
+pip install uv
+uv sync --locked --active
 ```
 
 ### 3. **Prepare Knowledge Source**

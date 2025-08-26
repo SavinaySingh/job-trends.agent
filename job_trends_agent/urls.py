@@ -17,11 +17,9 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from rag_app.views.get_response import get_response
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("rag_app.urls")),
-    path("process_request/", get_response),
 ]

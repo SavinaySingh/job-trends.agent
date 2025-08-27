@@ -2,42 +2,31 @@ import os
 import pickle
 import time
 from PIL import Image
-from pdf2image import convert_from_path
-from langchain.text_splitter import CharacterTextSplitter
 from sentence_transformers import SentenceTransformer
 from annoy import AnnoyIndex
 import json
 from tqdm import tqdm
 import shutil
+from rag_app.utils.chunking import split_text_file, split_csv_data
+from rag_app.utils.pdf_to_image import pdf_to_images
+from google.generativeai.generative_models import GenerativeModel
 
 
 def process_and_update_index(
     new_file_path,
+    llm: GenerativeModel,
     knowledge_dir="data/knowledge_source",
     pickle_dir="data/PickleFiles",
     annoy_index_path="vector_store/annoy_st_index.ann",
     doc_mapping_path="data/doc_mapping.json",
-    llm=None,
     model_name="all-MiniLM-L6-v2",
-    chunk_size=1000,
     n_trees=10,
 ):
     """
     Add a new file to knowledge source, process it, save pickle, then update Annoy index and doc mapping.
-
-    Args:
-        new_file_path (str): Full path to the new file to add.
-        knowledge_dir (str): Directory where knowledge source files are stored.
-        pickle_dir (str): Directory where pickle files are stored.
-        annoy_index_path (str): Path to saved Annoy index file.
-        doc_mapping_path (str): Path to saved doc mapping JSON file.
-        llm: Initialized LLM object to summarize images (if needed). If None, skip summarization.
-        model_name (str): SentenceTransformer model name.
-        chunk_size (int): Chunk size for splitting text.
-        n_trees (int): Number of trees for Annoy index build.
     """
     print(f"Processing new file: {new_file_path}")
-    # Copy file into knowledge_dir
+
     basename = os.path.basename(new_file_path)
     dest_path = os.path.join(knowledge_dir, basename)
     if os.path.abspath(new_file_path) != os.path.abspath(dest_path):
@@ -45,38 +34,6 @@ def process_and_update_index(
     else:
         print(f"File already in destination: {dest_path}")
     print(f"Copied file {basename} to knowledge source folder.")
-
-    # Helper functions (copy from your code)
-    def split_text_file(file_path, chunk_size=chunk_size):
-        with open(file_path, "r", encoding="utf-8") as file:
-            text = file.read()
-        text_splitter = CharacterTextSplitter(
-            separator="\n", chunk_size=chunk_size, chunk_overlap=200
-        )
-        return text_splitter.split_text(text)
-
-    def read_csv_as_text(file_path):
-        import csv
-
-        rows_as_text = []
-        with open(file_path, mode="r", encoding="utf-8") as file:
-            csv_reader = csv.reader(file)
-            headers = next(csv_reader)  # Skip header
-            for row in csv_reader:
-                row_text = " | ".join(row)
-                rows_as_text.append(row_text)
-        return rows_as_text
-
-    def split_csv_data(file_path, chunk_size=chunk_size):
-        rows_as_text = read_csv_as_text(file_path)
-        text_splitter = CharacterTextSplitter(
-            separator="\n", chunk_size=chunk_size, chunk_overlap=200
-        )
-        full_text = "\n".join(rows_as_text)
-        return text_splitter.split_text(full_text)
-
-    def pdf_to_images(pdf_path):
-        return convert_from_path(pdf_path)
 
     # Process file based on extension
     file_data = {}

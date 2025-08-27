@@ -2,7 +2,7 @@ import os
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from google.generativeai.generative_models import GenerativeModel
-from rag_app.utils.update_knowledge import process_and_update_index
+from rag_app.services.update_knowledge import process_and_update_index
 
 
 @csrf_exempt
